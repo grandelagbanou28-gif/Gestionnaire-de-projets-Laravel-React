@@ -1,18 +1,27 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
+import LanguageSwitcher from '@/Components/LanguageSwitcher';
 import { Link } from '@inertiajs/react';
 
 export default function Guest({ children }) {
     return (
-        <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-            <div>
-                <Link href="/">
-                    <ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />
+        <div className="auth-gradient">
+            <div className="absolute top-4 right-4">
+                <LanguageSwitcher />
+            </div>
+
+            <div className="animate-fade-in mb-6">
+                <Link href="/" className="block transition-transform hover:scale-105 duration-200">
+                    <ApplicationLogo className="w-48 h-14 text-omni-600 dark:text-omni-400" />
                 </Link>
             </div>
 
-            <div className="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+            <div className="auth-card animate-slide-up">
                 {children}
             </div>
+
+            <p className="mt-8 text-xs text-gray-400 dark:text-gray-600 animate-fade-in">
+                &copy; {new Date().getFullYear()} OmniTask. All rights reserved.
+            </p>
         </div>
     );
 }
