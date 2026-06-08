@@ -3,10 +3,15 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
+import LanguageSwitcher from '@/Components/LanguageSwitcher';
 import {Link} from '@inertiajs/react';
+import {useTranslation} from '@/hooks/useTranslation';
 
 export default function Authenticated({user, header, children}) {
   const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+  const {t} = useTranslation();
+
+  const avatarUrl = user.avatar_url;
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -22,54 +27,62 @@ export default function Authenticated({user, header, children}) {
 
               <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                 <NavLink href={route('dashboard')} active={route().current('dashboard')}>
-                  Dashboard
+                  {t('Dashboard')}
                 </NavLink>
                 <NavLink href={route('projects.index')} active={route().current('projects.index')}>
-                  Projects
+                  {t('Projects')}
                 </NavLink>
                 <NavLink href={route('tasks.index')} active={route().current('tasks.index')}>
-                  All Tasks
+                  {t('All Tasks')}
                 </NavLink>
                 <NavLink href={route('users.index')} active={route().current('users.index')}>
-                  Users
+                  {t('Users')}
                 </NavLink>
                 <NavLink href={route('tasks.my-tasks')} active={route().current('tasks.my-tasks')}>
-                  My Tasks
+                  {t('My Tasks')}
                 </NavLink>
               </div>
             </div>
 
-            <div className="hidden sm:flex sm:items-center sm:ms-6">
-              <div className="ms-3 relative">
+            <div className="hidden sm:flex sm:items-center sm:ms-6 gap-3">
+              <LanguageSwitcher />
+
+              <div className="relative">
                 <Dropdown>
                   <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
-                                            <button
-                                              type="button"
-                                              className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
-                                            >
-                                                {user.name}
-
-                                              <svg
-                                                className="ms-2 -me-0.5 h-4 w-4"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                              >
-                                                    <path
-                                                      fillRule="evenodd"
-                                                      d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                      clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </span>
+                    <span className="inline-flex rounded-md">
+                      <button
+                        type="button"
+                        className="inline-flex items-center gap-2 px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
+                      >
+                        {avatarUrl ? (
+                          <img src={avatarUrl} alt="" className="h-7 w-7 rounded-full object-cover ring-2 ring-gray-200 dark:ring-gray-600" />
+                        ) : (
+                          <span className="h-7 w-7 rounded-full bg-omni-100 dark:bg-omni-900/50 flex items-center justify-center text-xs font-bold text-omni-600 dark:text-omni-400">
+                            {user.name.charAt(0).toUpperCase()}
+                          </span>
+                        )}
+                        <span>{user.name}</span>
+                        <svg
+                          className="h-4 w-4"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </span>
                   </Dropdown.Trigger>
 
                   <Dropdown.Content>
-                    <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
+                    <Dropdown.Link href={route('profile.edit')}>{t('Profile')}</Dropdown.Link>
                     <Dropdown.Link href={route('logout')} method="post" as="button">
-                      Log Out
+                      {t('Log Out')}
                     </Dropdown.Link>
                   </Dropdown.Content>
                 </Dropdown>
@@ -105,20 +118,31 @@ export default function Authenticated({user, header, children}) {
         <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
           <div className="pt-2 pb-3 space-y-1">
             <ResponsiveNavLink href={route('dashboard')} active={route().current('dashboard')}>
-              Dashboard
+              {t('Dashboard')}
             </ResponsiveNavLink>
           </div>
 
           <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div className="px-4">
-              <div className="font-medium text-base text-gray-800 dark:text-gray-200">{user.name}</div>
-              <div className="font-medium text-sm text-gray-500">{user.email}</div>
+              <div className="flex items-center gap-3">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" className="h-10 w-10 rounded-full object-cover" />
+                ) : (
+                  <span className="h-10 w-10 rounded-full bg-omni-100 dark:bg-omni-900/50 flex items-center justify-center text-sm font-bold text-omni-600 dark:text-omni-400">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                )}
+                <div>
+                  <div className="font-medium text-base text-gray-800 dark:text-gray-200">{user.name}</div>
+                  <div className="font-medium text-sm text-gray-500">{user.email}</div>
+                </div>
+              </div>
             </div>
 
             <div className="mt-3 space-y-1">
-              <ResponsiveNavLink href={route('profile.edit')}>Profile</ResponsiveNavLink>
+              <ResponsiveNavLink href={route('profile.edit')}>{t('Profile')}</ResponsiveNavLink>
               <ResponsiveNavLink method="post" href={route('logout')} as="button">
-                Log Out
+                {t('Log Out')}
               </ResponsiveNavLink>
             </div>
           </div>
