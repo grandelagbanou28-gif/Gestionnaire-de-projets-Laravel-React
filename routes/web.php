@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('projects', ProjectController::class);
     Route::get('/tasks/my-tasks', [TaskController::class, 'myTasks'])->name('tasks.my-tasks');
@@ -21,5 +21,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::middleware('auth')->group(function () {
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+    Route::delete('/profile/photo', [ProfileController::class, 'destroyPhoto'])->name('profile.photo.destroy');
+});
+
+Route::post('/locale/{locale}', [\App\Http\Controllers\LocaleController::class, 'switch'])
+    ->name('locale.switch')
+    ->whereIn('locale', ['en', 'fr']);
 
 require __DIR__ . '/auth.php';

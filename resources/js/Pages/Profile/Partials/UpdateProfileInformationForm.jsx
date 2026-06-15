@@ -38,13 +38,17 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
     const uploadPhoto = () => {
         const file = photoInput.current?.files?.[0];
         if (!file) return;
-        const formData = new FormData();
-        formData.append('photo', file);
-        router.post(route('profile.photo.update'), formData, {
+        router.post(route('profile.photo.update'), {
+            photo: file,
+        }, {
             preserveScroll: true,
+            preserveState: true,
             onSuccess: () => {
                 photoInput.current.value = '';
                 setPhotoPreview(null);
+            },
+            onError: (errors) => {
+                console.error('Upload error:', errors);
             },
         });
     };

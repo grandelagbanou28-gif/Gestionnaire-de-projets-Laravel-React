@@ -1,1 +1,0 @@
-import{j as s}from"./app-CcOraKwX.js";function m({className:t="",disabled:n,children:r,loading:e=!1,...a}){return s.jsxs("button",{...a,className:`btn-gradient inline-flex items-center justify-center gap-2 ${t}`,disabled:n||e,children:[e&&s.jsx("span",{className:"spinner"}),r]})}export{m as P};
