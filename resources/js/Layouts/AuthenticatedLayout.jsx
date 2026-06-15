@@ -4,10 +4,12 @@ import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
-import {Link} from '@inertiajs/react';
+import CommandPalette from '@/Components/CommandPalette';
+import {Link, usePage} from '@inertiajs/react';
 import {useTranslation} from '@/hooks/useTranslation';
 
 export default function Authenticated({user, header, children}) {
+  const {projects, tasks, users} = usePage().props;
   const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
   const {t} = useTranslation();
 
@@ -35,6 +37,9 @@ export default function Authenticated({user, header, children}) {
                 <NavLink href={route('tasks.index')} active={route().current('tasks.index')}>
                   {t('All Tasks')}
                 </NavLink>
+                <NavLink href={route('tasks.kanban')} active={route().current('tasks.kanban')}>
+                  Kanban
+                </NavLink>
                 <NavLink href={route('users.index')} active={route().current('users.index')}>
                   {t('Users')}
                 </NavLink>
@@ -45,6 +50,16 @@ export default function Authenticated({user, header, children}) {
             </div>
 
             <div className="hidden sm:flex sm:items-center sm:ms-6 gap-3">
+              <button
+                onClick={() => document.dispatchEvent(new KeyboardEvent('keydown', {ctrlKey: true, key: 'k'}))}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span className="hidden lg:inline">Search...</span>
+                <kbd className="text-xs text-gray-400 bg-gray-200 dark:bg-gray-600 px-1 rounded">Ctrl+K</kbd>
+              </button>
               <LanguageSwitcher />
 
               <div className="relative">
@@ -156,6 +171,8 @@ export default function Authenticated({user, header, children}) {
       )}
 
       <main>{children}</main>
+
+      <CommandPalette projects={projects} tasks={tasks} users={users} />
     </div>
   );
 }

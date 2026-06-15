@@ -3,42 +3,60 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\TaskResource;
+use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 
 class DashboardController extends Controller
 {
-    /**
-     * Display the dashboard page.
-     *
-     * @param Request $request
-     * @return Response|ResponseFactory
-     */
     public function index(Request $request): Response|ResponseFactory
     {
-        // Get the authenticated user
         $user = $request->user();
 
-        // Count the total and user's pending tasks
         $totalPendingTasks = Task::pending()->count();
         $myPendingTasks = Task::pending()->assignedTo($user)->count();
 
-        // Count the total and user's in-progress tasks
         $totalInProgressTasks = Task::inProgress()->count();
         $myInProgressTasks = Task::inProgress()->assignedTo($user)->count();
 
-        // Count the total and user's completed tasks
         $totalCompletedTasks = Task::completed()->count();
         $myCompletedTasks = Task::completed()->assignedTo($user)->count();
 
-        // Get the user's active tasks, ordered by due date, limit to 10 tasks
         $activeTasks = Task::active()->assignedTo($user)->orderBy('due_date')
             ->limit(10)->get();
         $activeTasks = TaskResource::collection($activeTasks);
 
-        // Return an Inertia response with the dashboard view and the task data
-        return inertia('Dashboard', compact('totalPendingTasks', 'myPendingTasks', 'totalInProgressTasks', 'myInProgressTasks', 'totalCompletedTasks', 'myCompletedTasks', 'activeTasks'));
+        $totalProjects = Project::count();
+        $totalTasks = Task::count();
+        $totalUsers = User::count();
+        $overdueTasks = Task::where('due_date', '<', now())->whereNotIn('status', ['completed', 'done'])->count();
+
+        $tasksByStatus = [
+            ['name' => 'Pending', 'value' => Task::pending()->count(), 'color' => '#f59e0b'],
+            ['name' => 'In Progress', 'value' => Task::inProgress()->count(), 'color' => '#3b82f6'],
+            ['name' => 'Completed', 'value' => Task::completed()->count(), 'color' => '#10b981'],
+        ];
+
+        $projects = Project::withCount(['tasks as pending_tasks' => fn($q) => $q->pending()])
+            ->withCount(['tasks as in_progress_tasks' => fn($q) => $q->inProgress()])
+            ->withCount(['tasks as completed_tasks' => fn($q) => $q->completed()])
+            ->limit(10)->get()
+            ->map(fn($p) => [
+                'name' => $p->name,
+                'pending' => (int) $p->pending_tasks,
+                'inProgress' => (int) $p->in_progress_tasks,
+                'completed' => (int) $p->completed_tasks,
+            ]);
+
+        return inertia('Dashboard', compact(
+            'totalPendingTasks', 'myPendingTasks',
+            'totalInProgressTasks', 'myInProgressTasks',
+            'totalCompletedTasks', 'myCompletedTasks',
+            'activeTasks', 'totalProjects', 'totalTasks',
+            'totalUsers', 'overdueTasks', 'tasksByStatus', 'projects'
+        ));
     }
 }

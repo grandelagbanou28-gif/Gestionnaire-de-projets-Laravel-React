@@ -172,4 +172,38 @@ class TaskController extends Controller
             'success' => session('success') ?? '',
         ]);
     }
+
+    public function kanban(): Response|ResponseFactory
+    {
+        $tasks = Task::with(['project', 'assignedUser'])->get();
+
+        $columns = [
+            'pending' => [
+                'title' => 'Pending',
+                'color' => 'amber',
+                'tasks' => $tasks->where('status', 'pending')->values(),
+            ],
+            'in_progress' => [
+                'title' => 'In Progress',
+                'color' => 'blue',
+                'tasks' => $tasks->where('status', 'in_progress')->values(),
+            ],
+            'completed' => [
+                'title' => 'Completed',
+                'color' => 'emerald',
+                'tasks' => $tasks->where('status', 'completed')->values(),
+            ],
+        ];
+
+        return inertia('Task/Kanban', [
+            'columns' => $columns,
+        ]);
+    }
+
+    public function updateStatus(Request $request, Task $task): RedirectResponse
+    {
+        $request->validate(['status' => 'required|in:pending,in_progress,completed']);
+        $task->update(['status' => $request->status]);
+        return redirect()->back();
+    }
 }

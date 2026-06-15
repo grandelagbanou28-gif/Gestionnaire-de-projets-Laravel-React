@@ -13,6 +13,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('projects', ProjectController::class);
     Route::get('/tasks/my-tasks', [TaskController::class, 'myTasks'])->name('tasks.my-tasks');
+    Route::get('/kanban', [TaskController::class, 'kanban'])->name('tasks.kanban');
+    Route::patch('/tasks/{task}/status', [TaskController::class, 'updateStatus'])->name('tasks.update-status');
     Route::resource('tasks', TaskController::class);
     Route::resource('users', UserController::class);
 });
