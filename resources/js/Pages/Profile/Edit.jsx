@@ -36,4 +36,4 @@ export default function Edit({ auth, mustVerifyEmail, status }) {
             </div>
         </AuthenticatedLayout>
     );
-}
+} 
